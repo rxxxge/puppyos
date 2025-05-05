@@ -39,13 +39,13 @@ void terminal_putentryat(unsigned char c, uint8_t color, size_t x, size_t y) {
 }
 
 void terminal_scroll(int line) {
-	int loop;
-	char c;
-
-	for (loop = line * (VGA_WIDTH * 2) + 0xB8000; loop < VGA_WIDTH * 2; loop++) {
-		c = *loop;
-		*(loop - (VGA_WIDTH * 2)) = c;
-	}
+    for (size_t y = line; y < VGA_HEIGHT; y++) {
+        for (size_t x = 0; x < VGA_WIDTH; x++) {
+            size_t from = y * VGA_WIDTH + x;
+            size_t to = (y - line) * VGA_WIDTH + x;
+            terminal_buffer[to] = terminal_buffer[from];
+        }
+    }
 }
 
 void terminal_delete_last_line() {
@@ -74,7 +74,7 @@ void terminal_putchar(char c) {
 }
 
 void terminal_write(const char* data, size_t size) {
-	for (size_t i = 0; i < size; i++)
+  for (size_t i = 0; i < size; i++)
 		terminal_putchar(data[i]);
 }
 
